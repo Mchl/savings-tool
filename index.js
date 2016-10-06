@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 const https = require('https')
 const funds = require('./funds')
@@ -13,7 +13,7 @@ const options = {
     }
 }
 
-const groupedIds = funds.reduce((accumulator, current, index, array) => {
+const groupedIds = funds.reduce((accumulator, current) => {
     if (accumulator[accumulator.length - 1].length >= 4) {
         accumulator.push([])
     }
@@ -37,7 +37,7 @@ groupedIds.forEach((group, index) => {
                 receivedData[index] = ''
             }
             receivedData[index] += d
-        });
+        })
 
         res.on('end', () =>{
             const parsedData = JSON.parse(receivedData[index])
@@ -45,23 +45,42 @@ groupedIds.forEach((group, index) => {
             if (readFunds !== group.length) {
                 console.error('received fewer funds than requested! ', group, readFunds)
             }
-            const processedData = parsedData.forEach((fundData) => {
+            parsedData.forEach((fundData) => {
                 const fundId = group.shift()
                 const lastDayData = fundData.pop()
-                result.push([utils.fundById(fundId).name, utils.dateFormat(new Date(lastDayData[0])), lastDayData[1]])
+                const previousDayData = fundData.pop()
+                result.push({
+                    fundId,
+                    name: utils.nameFormat(utils.fundById(fundId).name),
+                    date: utils.dateFormat(new Date(lastDayData[0])),
+                    value: lastDayData[1],
+                    change: utils.calculateChange(lastDayData[1], previousDayData[1])
+                })
             })
             requestsInProgress--
+
             if (requestsInProgress === 0) {
-                console.log(result)
+                result
+                    .sort((v1,v2) => {
+                        if (v1.name > v2.name) {
+                            return 1
+                        } else if (v1.name < v2.name) {
+                            return -1
+                        } else {
+                            return 0
+                        }
+                    })
+                    .forEach(data => {
+                    console.log(`${data.date}\t${data.name}\t${data.value}\t${data.change}`)
+                })
             }
         })
-
     })
 
     request.end()
 
     request.on('error', (e) => {
         console.error(e)
-    });
+    })
 })
 
