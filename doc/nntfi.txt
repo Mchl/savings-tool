@@ -1,0 +1,26 @@
+
+Regexp to fetch id-name pairs from NN webpage
+addToClipboard_(\d+)">.+?(?="NN)(.+?)(?=<)
+
+
+1, "NN Akcji"
+27, "NN (L) Japonia"
+1500037, "NN (L) Stabilny Globalnej Alokacji"
+18, "NN (L) Globalny Spółek Dywidendowych"
+20, "NN (L) Europejski Spółek Dywidendowych"
+3, "NN Obligacji"
+24, "NN (L) Globalny Długu Korporacyjnego"
+17, "NN Akcji Środkowoeuropejskich"
+8, "NN Gotówkowy"
+4, "NN Stabilnego Wzrostu"
+15, "NN Lokacyjny Plus"
+2, "NN Zrównoważony"
+34, "NN Perspektywa 2020"
+16, "NN Perspektywa 2025"
+33, "NN Perspektywa 2030"
+32, "NN Perspektywa 2035"
+31, "NN Perspektywa 2040"
+26, "NN Perspektywa 2045"
+19, "NN (L) Spółek Dywidendowych USA"
+22, "NN (L) Spółek Dywidendowych Rynków Wschodzących"
+29, "NN (L) Obligacji Rynków Wschodzących (Waluta Lokalna)"
