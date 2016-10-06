@@ -2,6 +2,7 @@
 Regexp to fetch id-name pairs from NN webpage
 addToClipboard_(\d+)">.+?(?="NN)(.+?)(?=<)
 
+This webpage is great BTW https://regex101.com/
 
 1, "NN Akcji"
 27, "NN (L) Japonia"
@@ -24,3 +25,7 @@ addToClipboard_(\d+)">.+?(?="NN)(.+?)(?=<)
 19, "NN (L) Spółek Dywidendowych USA"
 22, "NN (L) Spółek Dywidendowych Rynków Wschodzących"
 29, "NN (L) Obligacji Rynków Wschodzących (Waluta Lokalna)"
+
+HTTP request to fetch data. Can query 4 funds at one time
+
+curl 'https://www.nntfi.pl/?action=quotes.getQuotesValuesAsJSON&unitCategoryId=5&fundId=1,2,3,4' -X POST -H 'content-length: 0' --compressed
