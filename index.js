@@ -1,12 +1,8 @@
 'use strict';
 
-const dateFormat = (date) => `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`
-
 const https = require('https')
 const funds = require('./funds')
-
-
-const fundById = (id) => funds.find(fund => id === fund.id)
+const utils = require('./utils')
 
 const options = {
     hostname: 'www.nntfi.pl',
@@ -52,7 +48,7 @@ groupedIds.forEach((group, index) => {
             const processedData = parsedData.forEach((fundData) => {
                 const fundId = group.shift()
                 const lastDayData = fundData.pop()
-                result.push([fundById(fundId).name, dateFormat(new Date(lastDayData[0])), lastDayData[1]])
+                result.push([utils.fundById(fundId).name, utils.dateFormat(new Date(lastDayData[0])), lastDayData[1]])
             })
             requestsInProgress--
             if (requestsInProgress === 0) {
