@@ -11,7 +11,7 @@
     },
     "googleSpreadsheet": {
         "apiKeyFile": "./data_private/google-sheets-api-key.json",
-        "spreadsheetId": "",
+        "spreadsheetId": "YOUR_SPREADSHEET_ID",
         "sheetName": "Sheet1"
     }
 }

@@ -1,4 +1,4 @@
-const funds = require('./funds')
+const funds = require('./data/funds')
 
 const fundById = (id) => funds.find(fund => id === fund.id)
 const dateFormat = (date) => `${date.getFullYear()}-${date.getMonth()+1}-${Array(3 - date.getDate().toString.length).join(0) + date.getDate()}`

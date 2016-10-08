@@ -2,7 +2,7 @@
 
 const config = require('./config')
 const https = require('https')
-const funds = require('./funds').filter(fund => config.fundsToTrack.indexOf(fund.id) > -1)
+const funds = require('./data/funds').filter(fund => config.fundsToTrack.indexOf(fund.id) > -1)
 const utils = require('./utils')
 const google = require('googleapis')
 
