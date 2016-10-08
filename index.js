@@ -5,6 +5,9 @@ const https = require('https')
 const funds = require('./funds').filter(fund => config.fundsToTrack.indexOf(fund.id) > -1)
 const utils = require('./utils')
 
+const authorize = require('./google_authorize').authorize
+const googleApiKey = require('./data_private/google-sheets-api-key.json')
+
 const options = config.requestOptions
 
 const fetchData = () => {
@@ -81,6 +84,10 @@ const fetchData = () => {
     })
 }
 
-fetchData()
-const interval = setInterval(fetchData, config.requestInterval)
+authorize(googleApiKey, () => {
+    fetchData()
+    const interval = setInterval(fetchData, config.requestInterval)
+})
+
+
 
