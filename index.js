@@ -4,13 +4,46 @@ const config = require('./config')
 const https = require('https')
 const funds = require('./funds').filter(fund => config.fundsToTrack.indexOf(fund.id) > -1)
 const utils = require('./utils')
+const google = require('googleapis')
 
 const authorize = require('./google_authorize').authorize
-const googleApiKey = require('./data_private/google-sheets-api-key.json')
+const googleApiKey = require(config.googleSpreadsheet.apiKeyFile)
 
 const options = config.requestOptions
 
-const fetchData = () => {
+const sendData = (auth, data) => {
+    console.log(new Date())
+    const values = data.sort((v1,v2) => {
+        if (v1.name > v2.name) {
+            return 1
+        } else if (v1.name < v2.name) {
+            return -1
+        } else {
+            return 0
+        }
+    })
+    .map(data => [
+        data.date,
+        data.name,
+        data.value,
+        data.change
+    ])
+
+    const sheets = google.sheets('v4');
+    sheets.spreadsheets.values.update({
+        auth,
+        spreadsheetId: config.googleSpreadsheet.spreadsheetId,
+        range: `${config.googleSpreadsheet.sheetName}!A1`,
+        valueInputOption: 'USER_ENTERED',
+        resource: {
+            range: `${config.googleSpreadsheet.sheetName}!A1`,
+            majorDimension: 'ROWS',
+            values
+        }
+    })
+}
+
+const fetchData = (auth) => {
     const groupedIds = funds.reduce((accumulator, current) => {
         if (accumulator[accumulator.length - 1].length >= 4) {
             accumulator.push([])
@@ -58,20 +91,7 @@ const fetchData = () => {
                 requestsInProgress--
 
                 if (requestsInProgress === 0) {
-                    console.log(new Date())
-                    result
-                        .sort((v1,v2) => {
-                            if (v1.name > v2.name) {
-                                return 1
-                            } else if (v1.name < v2.name) {
-                                return -1
-                            } else {
-                                return 0
-                            }
-                        })
-                        .forEach(data => {
-                            console.log(`${data.date}\t${data.name}\t${data.value}\t${data.change}`)
-                        })
+                    sendData(auth, result)
                 }
             })
         })
@@ -84,9 +104,9 @@ const fetchData = () => {
     })
 }
 
-authorize(googleApiKey, () => {
-    fetchData()
-    const interval = setInterval(fetchData, config.requestInterval)
+authorize(googleApiKey, (auth) => {
+    fetchData(auth)
+    const interval = setInterval(() => {fetchData(auth)}, config.requestInterval)
 })
 
 

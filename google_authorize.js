@@ -16,7 +16,6 @@
 
 const fs = require('fs');
 const readline = require('readline');
-const google = require('googleapis');
 const googleAuth = require('google-auth-library');
 
 // If modifying these scopes, delete your previously saved credentials

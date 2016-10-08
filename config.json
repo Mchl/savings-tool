@@ -1,0 +1,17 @@
+{
+    "fundsToTrack": [1,2,3,4,8,15,16,17,18,19,20,22,24,26,27,29,31,32,33,34,1500037],
+    "requestInterval": 60000,
+    "requestOptions": {
+        "hostname": "www.nntfi.pl",
+        "path": "/?action=quotes.getQuotesValuesAsJSON&unitCategoryId=5&fundId=",
+        "method": "POST",
+        "header": {
+            "Content-Length": 0
+        }
+    },
+    "googleSpreadsheet": {
+        "apiKeyFile": "./data_private/google-sheets-api-key.json",
+        "spreadsheetId": "",
+        "sheetName": "Sheet1"
+    }
+}
