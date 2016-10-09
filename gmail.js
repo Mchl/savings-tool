@@ -1,4 +1,4 @@
-const send = (auth, config, message) => {
+const send = (auth, config, data) => {
     const gmail = require('googleapis').gmail('v1')
     const mime = [
         'Content-Type: text/plain; charset="UTF-8"\n',
@@ -7,7 +7,7 @@ const send = (auth, config, message) => {
         `to: ${config.gmail.to}\n`,
         `from: ${config.gmail.from}\n`,
         `subject: ${config.gmail.subject} ${new Date}\n\n`,
-        JSON.stringify(message)
+        JSON.stringify(data)
     ].join('')
 
     const raw = new Buffer(mime).toString('base64').replace(/\+/g, '-').replace(/\//g, '_')

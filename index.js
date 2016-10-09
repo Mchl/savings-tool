@@ -28,21 +28,8 @@ const sendData = (auth, data) => {
         data.change
     ])
 
-    const sheets = require('googleapis').sheets('v4')
-    sheets.spreadsheets.values.update({
-        auth,
-        spreadsheetId: config.googleSpreadsheet.spreadsheetId,
-        range: `${config.googleSpreadsheet.sheetName}!A1`,
-        valueInputOption: 'USER_ENTERED',
-        resource: {
-            range: `${config.googleSpreadsheet.sheetName}!A1`,
-            majorDimension: 'ROWS',
-            values
-        }
-    })
-
-    const gmail = require('./gmail')
-    gmail.send(auth, config, values)
+    require('./gmail').send(auth, config, values)
+    require('./google_sheets').send(auth, config, values)
 
 }
 
