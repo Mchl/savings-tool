@@ -108,10 +108,9 @@ const fetchData = (auth) => {
     })
 }
 
-authorize(googleApiKey, (auth) => {
-    fetchData(auth)
-    const interval = setInterval(() => {fetchData(auth)}, config.requestInterval)
-})
-
-
-
+authorize(googleApiKey)
+    .then((auth) => {
+        fetchData(auth)
+        const interval = setInterval(() => {fetchData(auth)}, config.requestInterval)
+    })
+    .catch(err => {console.log(err)})
