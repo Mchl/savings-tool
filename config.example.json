@@ -13,5 +13,10 @@
         "apiKeyFile": "./data_private/google-sheets-api-key.json",
         "spreadsheetId": "YOUR_SPREADSHEET_ID",
         "sheetName": "Sheet1"
+    },
+    "gmail": {
+        "from": "",
+        "to": "",
+        "subject": "NN TFI"
     }
 }

@@ -4,7 +4,6 @@ const config = require('./config')
 const https = require('https')
 const funds = require('./data/funds').filter(fund => config.fundsToTrack.indexOf(fund.id) > -1)
 const utils = require('./utils')
-const google = require('googleapis')
 
 const authorize = require('./google_authorize').authorize
 const googleApiKey = require(config.googleSpreadsheet.apiKeyFile)
@@ -29,7 +28,7 @@ const sendData = (auth, data) => {
         data.change
     ])
 
-    const sheets = google.sheets('v4');
+    const sheets = require('googleapis').sheets('v4')
     sheets.spreadsheets.values.update({
         auth,
         spreadsheetId: config.googleSpreadsheet.spreadsheetId,
@@ -39,6 +38,27 @@ const sendData = (auth, data) => {
             range: `${config.googleSpreadsheet.sheetName}!A1`,
             majorDimension: 'ROWS',
             values
+        }
+    })
+
+    const gmail = require('googleapis').gmail('v1')
+    const message = [
+        'Content-Type: text/plain; charset="UTF-8"\n',
+        'MIME-Version: 1.0\n',
+        'Content-Transfer-Encoding: 7bit\n',
+        `to: ${config.gmail.to}\n`,
+        `from: ${config.gmail.from}\n`,
+        `subject: ${config.gmail.subject} ${new Date}\n\n`,
+        JSON.stringify(values)
+    ].join('')
+
+    const raw = new Buffer(message).toString('base64').replace(/\+/g, '-').replace(/\//g, '_')
+
+    gmail.users.messages.send({
+        auth,
+        userId: 'me',
+        resource: {
+            raw
         }
     })
 }
