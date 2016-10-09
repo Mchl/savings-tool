@@ -30,20 +30,25 @@ const send = (auth, config, data) => {
         'MIME-Version: 1.0\n',
         'Content-Transfer-Encoding: 7bit\n',
         `to: ${config.gmail.to}\n`,
-        `from: ${config.gmail.from}S\n`,
+        `from: ${config.gmail.from}\n`,
         `subject: ${config.gmail.subject} ${formattedDate}\n\n`,
         htmlify(data)
     ].join('')
 
     const raw = new Buffer(mime).toString('base64').replace(/\+/g, '-').replace(/\//g, '_')
 
-    gmail.users.messages.send({
-        auth,
-        userId: 'me',
-        resource: {
-            raw
-        }
+    return new Promise((resolve, reject) => {
+        gmail.users.messages.send({
+            auth,
+            userId: 'me',
+            resource: {
+                raw
+            }
+        }, reject)
+
+        resolve(true)
     })
+
 }
 
 module.exports = {
