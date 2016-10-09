@@ -41,26 +41,9 @@ const sendData = (auth, data) => {
         }
     })
 
-    const gmail = require('googleapis').gmail('v1')
-    const message = [
-        'Content-Type: text/plain; charset="UTF-8"\n',
-        'MIME-Version: 1.0\n',
-        'Content-Transfer-Encoding: 7bit\n',
-        `to: ${config.gmail.to}\n`,
-        `from: ${config.gmail.from}\n`,
-        `subject: ${config.gmail.subject} ${new Date}\n\n`,
-        JSON.stringify(values)
-    ].join('')
+    const gmail = require('./gmail')
+    gmail.send(auth, config, values)
 
-    const raw = new Buffer(message).toString('base64').replace(/\+/g, '-').replace(/\//g, '_')
-
-    gmail.users.messages.send({
-        auth,
-        userId: 'me',
-        resource: {
-            raw
-        }
-    })
 }
 
 const fetchData = (auth) => {
