@@ -8,8 +8,6 @@ const utils = require('./utils')
 const authorize = require('./google_authorize').authorize
 const googleApiKey = require(config.googleSpreadsheet.apiKeyFile)
 
-const options = config.requestOptions
-
 const sendData = (auth, data) => {
     console.log(new Date())
     const values = data.sort((v1,v2) => {
@@ -48,7 +46,9 @@ const fetchData = (auth) => {
     let result = []
 
     groupedIds.forEach((group, index) => {
-        options.path = '/?action=quotes.getQuotesValuesAsJSON&unitCategoryId=5&fundId=' + group.join()
+        const options = Object.assign({}, config.requestOptions, {
+            path: config.requestOptions.path + group.join()
+        })
 
         requestsInProgress++
 
