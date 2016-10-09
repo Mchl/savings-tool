@@ -31,6 +31,9 @@ const sendData = (auth, data) => {
 
 }
 
+let latestDataTimestamp = 0
+let shouldSendData = false
+
 const fetchData = (auth) => {
     const groupedIds = funds.reduce((accumulator, current) => {
         if (accumulator[accumulator.length - 1].length >= 4) {
@@ -70,6 +73,12 @@ const fetchData = (auth) => {
                     const fundId = group.shift()
                     const lastDayData = fundData.pop()
                     const previousDayData = fundData.pop()
+
+                    if (latestDataTimestamp < lastDayData[0]) {
+                        latestDataTimestamp = lastDayData[0]
+                        shouldSendData = true
+                    }
+
                     result.push({
                         fundId,
                         name: utils.nameFormat(utils.fundById(fundId).name),
@@ -80,8 +89,9 @@ const fetchData = (auth) => {
                 })
                 requestsInProgress--
 
-                if (requestsInProgress === 0) {
+                if (requestsInProgress === 0 && shouldSendData) {
                     sendData(auth, result)
+                    shouldSendData = false
                 }
             })
         })
