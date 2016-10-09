@@ -78,6 +78,10 @@ const fetchData = (auth) => {
                         latestDataTimestamp = lastDayData[0]
                         shouldSendData = true
                     }
+                    if (shouldSendData && latestDataTimestamp != lastDayData[0]) {
+                        latestDataTimestamp = Math.min(latestDataTimestamp, lastDayData[0])
+                        shouldSendData = false
+                    }
 
                     result.push({
                         fundId,
