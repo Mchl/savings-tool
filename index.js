@@ -65,7 +65,15 @@ const fetchData = () => {
                 })
 
                 res.on('end', () => {
-                    const parsedData = JSON.parse(receivedData[index])
+                    let parsedData
+                    try {
+                        parsedData = JSON.parse(receivedData[index])
+                    } catch (e) {
+                        console.log(e)
+                        reject({code: 'ERROR_PARSING_DATA'})
+                        return
+                    }
+
                     const readFunds = parsedData.shift()
                     if (readFunds !== group.length) {
                         console.error('received fewer funds than requested! ', group, readFunds)
@@ -125,8 +133,11 @@ authorize(googleApiKey)
                         ]
                     })
                     .catch(err => {
+                        console.log('Error while polling', err)
+                        if (err.code === 'SELF_SIGNED_CERT_IN_CHAIN') return
+                        if (err.code === 'ERROR_PARSING_DATA') return
+                        console.log('Unexpected error - stopping')
                         clearInterval(interval)
-                        console.log(err)
                     }
                 )
             },
@@ -134,7 +145,7 @@ authorize(googleApiKey)
         )
     })
     .catch(err => {
-        console.log(err)
+        console.log('Error while authenticating', err)
     })
 
 
