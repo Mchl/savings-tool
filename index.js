@@ -19,13 +19,6 @@ const prepareData = (data) => {
         return 0
       }
     })
-      .map(data => [
-        data.date,
-        data.name,
-        data.value,
-        data.change
-      ])
-
     resolve(values)
   })
 }

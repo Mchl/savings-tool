@@ -10,10 +10,10 @@ const htmlify = data => {
         <table>
           <tr><th width="80px">Data</th><th>Nazwa</th><th>Wartość</th><th>Zmiana</th></tr>`,
     ...data.map(row => `<tr>
-                            <td>${row[0]}</td>
-                            <td>${row[1]}</td>
-                            <td style="text-align: right; width: 60px;">${row[2]}</td>
-                            <td style="text-align: right; width: 60px; color:${colorFormat(row[3])}">${row[3]}</td>
+                            <td>${row.date}</td>
+                            <td>${row.name}</td>
+                            <td style="text-align: right; width: 60px;">${row.value}</td>
+                            <td style="text-align: right; width: 60px; color:${colorFormat(row.change)}">${row.change}</td>
                         </tr>`),
       `</table>
     </html>`
