@@ -6,7 +6,7 @@ const funds = require('./data/funds').filter(fund => config.fundsToTrack.indexOf
 const utils = require('./utils')
 
 const authorize = require('./google_authorize').authorize
-const googleApiKey = require(config.googleSpreadsheet.apiKeyFile)
+const googleApiKey = require(config.googleApi.apiKeyFile)
 
 const prepareData = (data) => {
   return new Promise((resolve) => {

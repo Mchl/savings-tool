@@ -9,8 +9,10 @@
             "Content-Length": 0
         }
     },
+    "googleApi": {
+      "apiKeyFile": "./data_private/google-api-key.json"
+    },
     "googleSpreadsheet": {
-        "apiKeyFile": "./data_private/google-api-key.json",
         "spreadsheetId": "YOUR_SPREADSHEET_ID",
         "sheetName": "Sheet1"
     },
