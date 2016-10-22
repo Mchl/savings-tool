@@ -14,6 +14,9 @@ At this moment it periodically queries my retirement plan company - [NN Investme
 
 ## Usage
 
+1. Login to [Google Developers' console](https://console.developers.google.com).
+1. Create a new project. Generate an OAuth 'other' key and download the secret file. Copy it to `./data_private/google-api-key.json`.
+1. Enable Sheets API and GMail API for this project
 1. Copy the `config.example.json` to `config.json` 
 1. Within this file adjust the config settings
 1. Create a spreadsheet on Google Docs where daily updates will be stored
