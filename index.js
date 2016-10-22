@@ -136,7 +136,7 @@ authorize(googleApiKey)
                         console.log('Error while polling', err)
                         if (err.code === 'SELF_SIGNED_CERT_IN_CHAIN') return
                         if (err.code === 'ERROR_PARSING_DATA') return
-			if (err.code === 'ECONNRESET') return
+                        if (err.code === 'ECONNRESET') return
                         console.log('Unexpected error - stopping')
                         clearInterval(interval)
                     }
