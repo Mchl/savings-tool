@@ -8,7 +8,7 @@ const utils = require('./utils')
 const authorize = require('./google_authorize').authorize
 const googleApiKey = require(config.googleApi.apiKeyFile)
 
-const prepareData = (data) => {
+const sortData = (data) => {
   return new Promise((resolve) => {
     const values = data.sort((v1, v2) => {
       if (v1.name > v2.name) {
@@ -22,9 +22,6 @@ const prepareData = (data) => {
     resolve(values)
   })
 }
-
-let latestDataTimestamp = 0
-let shouldSendData = false
 
 const fetchData = () => {
   console.log(new Date(), 'fetching data')
@@ -71,33 +68,25 @@ const fetchData = () => {
           if (readFunds !== group.length) {
             console.error('received fewer funds than requested! ', group, readFunds)
           }
-          parsedData.forEach((fundData) => {
-            const fundId = group.shift()
-            const lastDayData = fundData.pop()
-            const previousDayData = fundData.pop()
-
-            if (latestDataTimestamp < lastDayData[0]) {
-              latestDataTimestamp = lastDayData[0]
-              shouldSendData = true
-            }
-            if (shouldSendData && latestDataTimestamp != lastDayData[0]) {
-              latestDataTimestamp = Math.min(latestDataTimestamp, lastDayData[0])
-              shouldSendData = false
-            }
+          parsedData.forEach((fundData, index) => {
+            const fundId = group[index]
+            const data = fundData.map(row => {
+              return {
+                timestamp: row[0],
+                value: row[1]
+              }
+            })
 
             result.push({
               fundId,
-              name: utils.nameFormat(utils.fundById(fundId).name),
-              date: utils.dateFormat(new Date(lastDayData[0])),
-              value: lastDayData[1],
-              change: utils.calculateChange(lastDayData[1], previousDayData[1])
+              name: utils.fundById(fundId).name,
+              data
             })
           })
           requestsInProgress--
 
-          if (requestsInProgress === 0 && shouldSendData) {
+          if (requestsInProgress === 0) {
             resolve(result)
-            shouldSendData = false
           }
         })
       })
@@ -111,20 +100,109 @@ const fetchData = () => {
   })
 }
 
+const shouldProcessData = data => {
+  let latestDataTimestamp = 0
+  let processData = false
+
+  data.forEach(fund => {
+    const lastDayData = fund.data.splice(-1)[0]
+
+    if (latestDataTimestamp < lastDayData.timestamp) {
+      latestDataTimestamp = lastDayData.timestamp
+      processData = true
+    }
+    if (processData && latestDataTimestamp != lastDayData.timestamp) {
+      latestDataTimestamp = Math.min(latestDataTimestamp, lastDayData.timestamp)
+      processData = false
+    }
+  })
+
+  return new Promise(resolve => {
+    resolve({
+      processData,
+      data
+    })
+  })
+}
+
+const matchQuotesToTransaction = (portfolio, quotes, transaction, timestamp) => {
+  const fundId = transaction.fundId
+  const fundData = quotes.data.filter(d => d.fundId === fundId)[0]
+
+  fundData.data.forEach(quote => {
+    if (
+      Math.abs(timestamp - quote.timestamp) < 1000 * 3600 * 24 &&
+      new Date(timestamp).getDate() === new Date(quote.timestamp).getDate()
+    ) {
+      portfolio[timestamp][fundId].units += transaction.value / quote.value
+    }
+  })
+  return portfolio
+}
+
+const matchQuotesToTransactionDay = (portfolio, quotes, transactionDay) => {
+  const timestamp = transactionDay.timestamp
+  transactionDay.transactions.forEach(transaction => {
+    const fundId = transaction.fundId
+
+    if (!portfolio[timestamp][fundId]) {
+      portfolio[timestamp][fundId] = {
+        units: 0
+      }
+    }
+
+    portfolio = matchQuotesToTransaction(portfolio, quotes, transaction, timestamp)
+  })
+
+  return portfolio
+}
+
+const initializePortfolioDay = (portfolio, quotes, transactionDay) => {
+  const timestamp = transactionDay.timestamp
+  portfolio[timestamp] = {}
+
+  if (Object.keys(portfolio).length > 1) {
+    const lastPortfolio = portfolio[Object.keys(portfolio).slice(-2)[0]]
+    Object.keys(lastPortfolio).forEach(fundId => {
+      portfolio[timestamp][fundId] = Object.assign({}, lastPortfolio[fundId])
+    })
+  }
+
+  return portfolio
+}
+
+const processData = quotes => {
+  return new Promise((resolve, reject) => {
+    if (!quotes.processData) {
+      resolve(false)
+    } else {
+      const transactions = require('./google_sheets').getTransactions(config)
+
+      transactions.then(transactionData => {
+        let portfolio = {}
+
+        transactionData.forEach(transactionDay => {
+          portfolio = initializePortfolioDay(portfolio, quotes, transactionDay)
+          portfolio = matchQuotesToTransactionDay(portfolio, quotes, transactionDay)
+        })
+
+        console.log(portfolio[Object.keys(portfolio).slice(-1)[0]])
+      }).catch(err => {
+        console.trace(err)
+      })
+    }
+  })
+}
+
 authorize(googleApiKey)
-  .then((auth) => {
+  .then(() => {
     console.log('Interval polling started')
     const interval = setInterval(
       () => {
         fetchData()
-          .then(prepareData)
-          .then(data => {
-            console.log('sending data')
-            return Promise.all[
-              require('./gmail').send(auth, config, data),
-                require('./google_sheets').send(auth, config, data)
-              ]
-          })
+          .then(shouldProcessData)
+          .then(processData)
+
           .catch(err => {
               console.log('Error while polling', err)
               if (err.code === 'SELF_SIGNED_CERT_IN_CHAIN') return
@@ -134,6 +212,7 @@ authorize(googleApiKey)
               clearInterval(interval)
             }
           )
+        clearInterval(interval)
       },
       config.requestInterval
     )
