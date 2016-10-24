@@ -1,3 +1,5 @@
+'use strict'
+
 /**
  * Copyright 2012 Google Inc. All Rights Reserved.
  *
@@ -27,6 +29,8 @@ const SCOPES = [
 const TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE) + '/.credentials/';
 const TOKEN_PATH = TOKEN_DIR + 'sheets.googleapis.com-savings-tool.json';
 
+let client
+
 /**
  * Create an OAuth2 client with the given credentials, and then execute the
  * given callback function.
@@ -48,7 +52,8 @@ function authorize(credentials, callback) {
         getNewToken(oauth2Client, resolve, reject);
       } else {
         oauth2Client.credentials = JSON.parse(token);
-        resolve(oauth2Client);
+        client = oauth2Client;
+        resolve(true);
       }
     })
   })
@@ -106,5 +111,6 @@ function storeToken(token) {
 }
 
 module.exports = {
-  authorize
+  authorize,
+  getClient: () => client
 }
