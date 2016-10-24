@@ -12,10 +12,10 @@ const send = (auth, config, data) => {
     sheets.spreadsheets.values.update({
       auth,
       spreadsheetId: config.googleSpreadsheet.spreadsheetId,
-      range: `${config.googleSpreadsheet.sheetName}!A2`,
+      range: `${config.googleSpreadsheet.sheets.lastDay}!A2`,
       valueInputOption: 'USER_ENTERED',
       resource: {
-        range: `${config.googleSpreadsheet.sheetName}!A2`,
+        range: `${config.googleSpreadsheet.sheets.lastDay}!A2`,
         majorDimension: 'ROWS',
         values: dataArray
       }
@@ -25,6 +25,52 @@ const send = (auth, config, data) => {
   })
 }
 
+const getTransactions = config => {
+  const auth = require('./google_authorize').getClient()
+  const sheets = require('googleapis').sheets('v4')
+
+  return new Promise((resolve, reject) => {
+    sheets.spreadsheets.values.get({
+      auth,
+      spreadsheetId: config.googleSpreadsheet.spreadsheetId,
+      range: `${config.googleSpreadsheet.sheets.transactions}!A2:C`,
+      valueRenderOption: 'UNFORMATTED_VALUE'
+    }, (err, response) => {
+      if (err) {
+         reject(err)
+      }
+
+      const data = response.values
+        .map(row => {
+          return {
+            fundId: row[0],
+            value: row[2],
+            timestamp: new Date(row[1]).getTime()
+          }
+        })
+        .sort(
+          (a, b) => a.timestamp - b.timestamp
+        ).reduce((acc, row) => {
+          if (acc.length === 0 || acc.slice(-1)[0].timestamp !== row.timestamp) {
+            acc.push({
+              timestamp: row.timestamp,
+              transactions: []
+            })
+          }
+          acc[acc.length - 1].transactions.push({
+            fundId: row.fundId,
+            value: row.value
+          })
+
+          return acc
+        }, [])
+
+      resolve(data)
+    })
+  })
+}
+
 module.exports = {
-  send
+  send,
+  getTransactions
 }
