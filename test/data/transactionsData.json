@@ -1,0 +1,167 @@
+[
+  {
+    "timestamp": 1447887600000,
+    "transactions": [
+      {
+        "fundId": 3,
+        "value": 100
+      }
+    ]
+  },
+  {
+    "timestamp": 1448319600000,
+    "transactions": [
+      {
+        "fundId": 3,
+        "value": 11777
+      }
+    ]
+  },
+  {
+    "timestamp": 1448578800000,
+    "transactions": [
+      {
+        "fundId": 3,
+        "value": -8000
+      },
+      {
+        "fundId": 1500037,
+        "value": 8000
+      }
+    ]
+  },
+  {
+    "timestamp": 1453158000000,
+    "transactions": [
+      {
+        "fundId": 3,
+        "value": 1165
+      }
+    ]
+  },
+  {
+    "timestamp": 1454367600000,
+    "transactions": [
+      {
+        "fundId": 3,
+        "value": 1000
+      }
+    ]
+  },
+  {
+    "timestamp": 1456873200000,
+    "transactions": [
+      {
+        "fundId": 3,
+        "value": 1000
+      }
+    ]
+  },
+  {
+    "timestamp": 1459720800000,
+    "transactions": [
+      {
+        "fundId": 3,
+        "value": 1000
+      }
+    ]
+  },
+  {
+    "timestamp": 1462312800000,
+    "transactions": [
+      {
+        "fundId": 3,
+        "value": 1000
+      }
+    ]
+  },
+  {
+    "timestamp": 1464818400000,
+    "transactions": [
+      {
+        "fundId": 3,
+        "value": 1000
+      }
+    ]
+  },
+  {
+    "timestamp": 1465768800000,
+    "transactions": [
+      {
+        "fundId": 3,
+        "value": -6000
+      },
+      {
+        "fundId": 1500037,
+        "value": 6000
+      }
+    ]
+  },
+  {
+    "timestamp": 1467583200000,
+    "transactions": [
+      {
+        "fundId": 3,
+        "value": 1000
+      }
+    ]
+  },
+  {
+    "timestamp": 1470088800000,
+    "transactions": [
+      {
+        "fundId": 3,
+        "value": 1000
+      }
+    ]
+  },
+  {
+    "timestamp": 1472767200000,
+    "transactions": [
+      {
+        "fundId": 3,
+        "value": 1000
+      }
+    ]
+  },
+  {
+    "timestamp": 1473199200000,
+    "transactions": [
+      {
+        "fundId": 3,
+        "value": -7267.56
+      },
+      {
+        "fundId": 22,
+        "value": 7267.56
+      }
+    ]
+  },
+  {
+    "timestamp": 1475532000000,
+    "transactions": [
+      {
+        "fundId": 3,
+        "value": 1000
+      }
+    ]
+  },
+  {
+    "timestamp": 1478127600000,
+    "transactions": [
+      {
+        "fundId": 3,
+        "value": 1000
+      }
+    ]
+  },
+  {
+    "timestamp": 1480633200000,
+    "transactions": [
+      {
+        "fundId": 3,
+        "value": 1000
+      }
+    ]
+  }
+]
