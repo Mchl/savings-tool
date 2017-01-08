@@ -14,5 +14,9 @@
   "dependencies": {
     "google-auth-library": "^0.9.8",
     "googleapis": "^14.0.0"
+  },
+  "devDependencies": {
+    "expect": "^1.20.2",
+    "mocha": "^3.2.0"
   }
 }
