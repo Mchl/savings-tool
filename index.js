@@ -105,7 +105,7 @@ const shouldProcessData = data => {
   let processData = false
 
   data.forEach(fund => {
-    const lastDayData = fund.data.splice(-1)[0]
+    const lastDayData = fund.data.slice(-1)[0]
 
     if (latestDataTimestamp < lastDayData.timestamp) {
       latestDataTimestamp = lastDayData.timestamp
@@ -127,7 +127,7 @@ const shouldProcessData = data => {
 
 const matchQuotesToTransaction = (portfolio, quotes, transaction, timestamp) => {
   const fundId = transaction.fundId
-  const fundData = quotes.data.filter(d => d.fundId === fundId)[0]
+  const fundData = quotes.filter(d => d.fundId === fundId)[0]
 
   fundData.data.forEach(quote => {
     if (
@@ -135,6 +135,7 @@ const matchQuotesToTransaction = (portfolio, quotes, transaction, timestamp) => 
       new Date(timestamp).getDate() === new Date(quote.timestamp).getDate()
     ) {
       portfolio[timestamp][fundId].units += transaction.value / quote.value
+      portfolio[timestamp][fundId].value = portfolio[timestamp][fundId].units * quote.value
     }
   })
   return portfolio
@@ -182,11 +183,34 @@ const processData = quotes => {
         let portfolio = {}
 
         transactionData.forEach(transactionDay => {
-          portfolio = initializePortfolioDay(portfolio, quotes, transactionDay)
-          portfolio = matchQuotesToTransactionDay(portfolio, quotes, transactionDay)
+          portfolio = initializePortfolioDay(portfolio, quotes.data, transactionDay)
+          portfolio = matchQuotesToTransactionDay(portfolio, quotes.data, transactionDay)
         })
 
-        console.log(portfolio[Object.keys(portfolio).slice(-1)[0]])
+        const lastPortfolio = portfolio[Object.keys(portfolio).slice(-1)[0]]
+
+        let totalUnits = 0
+        let totalChange = 0
+        Object.keys(lastPortfolio).forEach(fundId => {
+          const fundData = quotes.data.filter(d => d.fundId === parseInt(fundId, 10))[0].data
+          const lastDays = fundData.slice(-2)
+          totalUnits += lastPortfolio[fundId].units
+          totalChange += lastPortfolio[fundId].units * (lastDays[1].value/lastDays[0].value-1)
+
+          Object.assign(lastPortfolio[fundId], {
+            lastDayChange: lastDays[1].value/lastDays[0].value-1
+          })
+        })
+
+        const result = {
+          portfolio,
+          lastDay: {
+            portfolio: lastPortfolio,
+            change: totalChange/totalUnits
+          }
+        }
+
+        console.log(result)
       }).catch(err => {
         console.trace(err)
       })
@@ -199,19 +223,27 @@ authorize(googleApiKey)
     console.log('Interval polling started')
     const interval = setInterval(
       () => {
-        fetchData()
-          .then(shouldProcessData)
-          .then(processData)
+        const state = {
+          raw: {},
+          config: {},
+          processed: {},
+          errors: []
+        }
 
-          .catch(err => {
-              console.log('Error while polling', err)
-              if (err.code === 'SELF_SIGNED_CERT_IN_CHAIN') return
-              if (err.code === 'ERROR_PARSING_DATA') return
-              if (err.code === 'ECONNRESET') return
-              console.log('Unexpected error - stopping')
-              clearInterval(interval)
-            }
-          )
+        loadConfig(state)
+
+        // fetchData()
+        //   .then(shouldProcessData)
+        //   .then(processData)
+        //   .catch(err => {
+        //       console.log('Error while polling', err)
+        //       if (err.code === 'SELF_SIGNED_CERT_IN_CHAIN') return
+        //       if (err.code === 'ERROR_PARSING_DATA') return
+        //       if (err.code === 'ECONNRESET') return
+        //       console.log('Unexpected error - stopping')
+        //       clearInterval(interval)
+        //     }
+        //   )
         clearInterval(interval)
       },
       config.requestInterval
