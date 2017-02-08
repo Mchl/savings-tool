@@ -137,6 +137,7 @@ authorize(googleApiKey)
                         if (err.code === 'SELF_SIGNED_CERT_IN_CHAIN') return
                         if (err.code === 'ERROR_PARSING_DATA') return
                         if (err.code === 'ECONNRESET') return
+                        if (err.code === 'ENOTFOUND') return
                         console.log('Unexpected error - stopping')
                         clearInterval(interval)
                     }
