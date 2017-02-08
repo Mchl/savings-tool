@@ -90,6 +90,14 @@ String: This will be used as the first part of email subject. Date and hour of a
 
 ## Version history
 
+### 1.0.2
+
+* Ignore ENOTFOUND errors - they're transient and should not stop polling
+
+### 1.0.1
+
+* Add instructions regarding OAuth key to README.md
+
 ### 1.0.0
 
 * Basically 0.0.3 which has proven to be stable enough over a course of several days
