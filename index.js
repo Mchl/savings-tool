@@ -138,6 +138,7 @@ authorize(googleApiKey)
                         if (err.code === 'ERROR_PARSING_DATA') return
                         if (err.code === 'ECONNRESET') return
                         if (err.code === 'ENOTFOUND') return
+                        if (err.code === 'ETIMEDOUT') return
                         console.log('Unexpected error - stopping')
                         clearInterval(interval)
                     }
