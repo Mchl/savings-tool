@@ -93,6 +93,7 @@ String: This will be used as the first part of email subject. Date and hour of a
 ### 1.0.2
 
 * Ignore ENOTFOUND errors - they're transient and should not stop polling
+* Ignore ETIMEDOUT errors - they're transient and should not stop polling
 
 ### 1.0.1
 
