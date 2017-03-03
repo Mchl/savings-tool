@@ -139,6 +139,7 @@ authorize(googleApiKey)
                         if (err.code === 'ECONNRESET') return
                         if (err.code === 'ENOTFOUND') return
                         if (err.code === 'ETIMEDOUT') return
+                        if (err.code === 'EHOSTUNREACH') return
                         console.log('Unexpected error - stopping')
                         clearInterval(interval)
                     }
